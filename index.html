@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Satanism Loop (Browser)</title>
+
+  <!-- PyScript (runs Python in the browser) -->
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+  <style>
+    :root { --bg: #0c0f14; --fg: #e6e6e6; --accent: #8ae234; }
+    body { margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; background: var(--bg); color: var(--fg); }
+    .wrap { max-width: 800px; margin: 40px auto; padding: 16px; }
+    .title { color: #f5f5f5; margin-bottom: 8px; }
+    .console {
+      background:#0b0d12; border:1px solid #202534; border-radius:10px;
+      padding:16px; min-height: 320px; white-space: pre-wrap; line-height:1.4;
+      box-shadow: 0 6px 24px rgba(0,0,0,.4), inset 0 0 0 1px #12161f;
+      overflow:auto;
+    }
+    .row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    input[type="text"] {
+      flex:1; min-width: 280px; background:#0a0d14; color:var(--fg);
+      border:1px solid #2a3244; border-radius:8px; padding:10px 12px;
+    }
+    button {
+      background:#111726; color:#cfd7ff; border:1px solid #2a3244;
+      border-radius:8px; padding:10px 14px; cursor:pointer;
+    }
+    button:hover { border-color:#3a4661; }
+    .muted { color:#9aa3b2; }
+    .ok { color: var(--accent); }
+    .eyes { white-space: pre; font-size: 12px; color:#a5b4fc; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="title">Satanism Loop (Browser)</h1>
+    <div id="screen" class="console" aria-live="polite"></div>
+
+    <div class="row">
+      <button id="opt1">1) Answer the question</button>
+      <button id="opt2">2) Ask your own question</button>
+      <button id="opt3">3) Pff, no thanks…</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <div class="row" id="qaRow" style="display:none;">
+      <input id="textInput" type="text" placeholder="Type here…" />
+      <button id="submit">Submit</button>
+    </div>
+
+    <p class="muted">Tip: This runs entirely in your browser with PyScript (no server needed).</p>
+  </div>
+
+  <py-script>
+from pyscript import document, when
+import asyncio
+import textwrap
+
+screen = document.querySelector("#screen")
+qa_row = document.querySelector("#qaRow")
+text_input = document.querySelector("#textInput")
+
+def clear():
+    screen.innerText = ""
+
+def print_line(s=""):
+    # Append a line to the console div
+    if screen.innerText:
+        screen.innerText += "\\n" + s
+    else:
+        screen.innerText = s
+    screen.scrollTop = screen.scrollHeight
+
+async def pause(sec):
+    await asyncio.sleep(sec)
+
+def show_menu():
+    clear()
+    print_line("Just ansewr the question; It's simple!")
+    print_line("1. Answer the question, it's simple.")
+    print_line("2. Ask your own question")
+    print_line("3. Pff, no thanks...")
+
+def show_input(prompt):
+    print_line()
+    print_line(prompt)
+    qa_row.style.display = "flex"
+    text_input.value = ""
+    text_input.focus()
+
+@when("click", "#opt1")
+def on_opt1(evt):
+    clear()
+    show_input("What is Satanism? ")
+
+@when("click", "#opt2")
+def on_opt2(evt):
+    clear()
+    show_input("Oh, you want to ask me a question? Go on then.")
+
+@when("click", "#opt3")
+async def on_opt3(evt):
+    clear()
+    print_line("Nothing about you is real")
+    await pause(1.5)
+    clear()
+    print_line("You just want to be like us!")
+    await pause(1.5)
+    print_line("🐮lolcow🐮")
+    await pause(0.5)
+    print_line("""
+     ▄████▄        ▄████▄
+  ▄█▀    ▀█▄    ▄█▀    ▀█▄
+  █▀  ▄▄▄   ▀█  █▀   ▄▄▄  ▀█
+█   █   █   █  █   █   █   █
+█   ▀▄▄▄▀   █  █   ▀▄▄▄▀   █
+  █▄        ▄█  █▄        ▄█
+  ▀█▄▄▄▄▄▄█▀    ▀█▄▄▄▄▄▄█▀
+""")
+    # done (no auto-reset)
+
+@when("click", "#reset")
+def on_reset(evt):
+    qa_row.style.display = "none"
+    show_menu()
+
+@when("click", "#submit")
+async def on_submit(evt):
+    # Handle both modes based on the last prompt line
+    prompt_lines = screen.innerText.splitlines()
+    last_prompt = prompt_lines[-1] if prompt_lines else ""
+    val = text_input.value.strip()
+    qa_row.style.display = "none"
+
+    if last_prompt.startswith("What is Satanism?"):
+        # Option 1 branch
+        print_line(f"Lol🐄 You think Satanism is {val}?")
+        await pause(1.2)
+        clear()
+        print_line("No it isn't!")
+        await pause(1.0)
+        print_line("🐮lolcow🐮")
+        await pause(1.0)
+        show_menu()
+
+    elif last_prompt.startswith("Oh, you want to ask me a question?"):
+        # Option 2 branch (trap)
+        low = val.lower()
+        if low == "what is satanism":
+            print_line("What? WHAT?!?")
+            await pause(0.6)
+            # Intentional crash: raise & let PyScript show the error
+            raise Exception("💀 Crashout! 💀")
+        else:
+            clear()
+            print_line(f"{val}. That isn't even a real question, lolcow🐄")
+            await pause(0.8)
+            print_line("No it isn't!")
+            await pause(1.0)
+            show_menu()
+    else:
+        # Fallback: unknown state → return to menu
+        show_menu()
+
+# Boot
+show_menu()
+  </py-script>
+</body>
+</html>
