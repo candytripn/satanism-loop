@@ -1,10 +1,52 @@
-<style>
-  .error { color: #ff6b6b; font-weight: bold; }
-</style>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Satanism Loop (Browser)</title>
 
-<py-script>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.8.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.8.1/core.js"></script>
+
+  <style>
+    :root { --bg:#0c0f14; --fg:#e6e6e6; --accent:#8ae234; }
+    body { margin:0; font-family: ui-monospace, Menlo, Consolas, "Liberation Mono", monospace; background:var(--bg); color:var(--fg); }
+    .wrap { max-width: 800px; margin: 40px auto; padding: 16px; }
+    .title { margin: 0 0 8px; }
+    .console { background:#0b0d12; border:1px solid #202534; border-radius:10px; padding:16px; min-height:320px; white-space:pre-wrap; line-height:1.4; overflow:auto; box-shadow: 0 6px 24px rgba(0,0,0,.35), inset 0 0 0 1px #12161f; }
+    .row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    input[type="text"] { flex:1; min-width:280px; background:#0a0d14; color:var(--fg); border:1px solid #2a3244; border-radius:8px; padding:10px 12px; }
+    button { background:#111726; color:#cfd7ff; border:1px solid #2a3244; border-radius:8px; padding:10px 14px; cursor:pointer; }
+    button:hover { border-color:#3a4661; }
+    .muted { color:#9aa3b2; }
+    .error { color:#ff6b6b; font-weight:600; }
+    .errorbox { background:#180e0e; border:1px solid #402121; border-radius:8px; padding:12px; margin-top:8px; box-shadow: inset 0 0 0 1px rgba(255,0,0,.08); }
+    .eyes { white-space: pre; font-size: 12px; color:#a5b4fc; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="title">Satanism Loop (Browser)</h1>
+    <div id="screen" class="console" aria-live="polite"></div>
+
+    <div class="row">
+      <button id="opt1">1) Answer the question</button>
+      <button id="opt2">2) Ask your own question</button>
+      <button id="opt3">3) Pff, no thanks…</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <div class="row" id="qaRow" style="display:none;">
+      <input id="textInput" type="text" placeholder="Type here…" />
+      <button id="submit">Submit</button>
+    </div>
+
+    <p class="muted">Runs entirely in your browser with PyScript.</p>
+  </div>
+
+  <py-script>
 from pyscript import document, when
-import asyncio, sys, traceback
+import asyncio, random, datetime
 
 screen = document.querySelector("#screen")
 qa_row = document.querySelector("#qaRow")
@@ -19,6 +61,15 @@ def print_line(s="", cls=""):
     else:
         line = f"<div>{s}</div>"
     screen.innerHTML += line
+    screen.scrollTop = screen.scrollHeight
+
+def print_pre(s="", cls=""):
+    if cls:
+        block = f'<pre class="{cls}">{s}</pre>'
+    else:
+        block = f"<pre>{s}</pre>"
+    box = f'<div class="errorbox">{block}</div>'
+    screen.innerHTML += box
     screen.scrollTop = screen.scrollHeight
 
 async def pause(sec): 
@@ -37,6 +88,23 @@ def show_input(prompt):
     qa_row.style.display = "flex"
     text_input.value = ""
     text_input.focus()
+
+def fake_traceback(msg="💀 Crashout! 💀"):
+    ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    frames = [
+        '  File "<browser>", line 76, in satanism_loop',
+        '  File "<browser>", line 121, in on_submit',
+        '  File "<pyscript>", line 1, in <module>'
+    ]
+    header = "Traceback (most recent call last):"
+    lines = [header] + frames + [f"Exception: {msg}"]
+    return "\n".join(lines) + f"\n[{ts}]"
+
+async def fake_crash():
+    print_line("What? WHAT?!?", cls="error")
+    await pause(0.6)
+    print_pre(fake_traceback(), cls="error")
+    print_line("Press Reset to continue.", cls="muted")
 
 @when("click", "#opt1")
 def on_opt1(evt):
@@ -58,7 +126,7 @@ async def on_opt3(evt):
     await pause(1.5)
     print_line("🐮lolcow🐮")
     await pause(0.5)
-    print_line(r"""
+    print_line("""
      ▄████▄        ▄████▄
   ▄█▀    ▀█▄    ▄█▀    ▀█▄
   █▀  ▄▄▄   ▀█  █▀   ▄▄▄  ▀█
@@ -75,37 +143,34 @@ def on_reset(evt):
 
 @when("click", "#submit")
 async def on_submit(evt):
-    try:
-        last_prompt = (screen.innerText.splitlines() or [""])[-1]
-        val = text_input.value.strip()
-        qa_row.style.display = "none"
+    last_prompt = (screen.innerText.splitlines() or [""])[-1]
+    val = text_input.value.strip()
+    qa_row.style.display = "none"
 
-        if last_prompt.startswith("What is Satanism?"):
-            print_line(f"Lol🐄 You think Satanism is {val}?")
-            await pause(1.2)
+    if last_prompt.startswith("What is Satanism?"):
+        print_line(f"Lol🐄 You think Satanism is {val}?")
+        await pause(1.2)
+        clear()
+        print_line("No it isn't!")
+        await pause(1.0)
+        print_line("🐮lolcow🐮")
+        await pause(1.0)
+        show_menu()
+
+    elif last_prompt.startswith("Oh, you want to ask me a question?"):
+        if val.lower() == "what is satanism":
+            await fake_crash()
+        else:
             clear()
+            print_line(f"{val}. That isn't even a real question, lolcow🐄")
+            await pause(0.8)
             print_line("No it isn't!")
             await pause(1.0)
-            print_line("🐮lolcow🐮")
-            await pause(1.0)
             show_menu()
+    else:
+        show_menu()
 
-        elif last_prompt.startswith("Oh, you want to ask me a question?"):
-            if val.lower() == "what is satanism":
-                print_line("What? WHAT?!?")
-                await pause(0.6)
-                raise Exception("💀 Crashout! 💀")
-            else:
-                clear()
-                print_line(f"{val}. That isn't even a real question, lolcow🐄")
-                await pause(0.8)
-                print_line("No it isn't!")
-                await pause(1.0)
-                show_menu()
-        else:
-            show_menu()
-
-    except Exception as e:
-        tb = traceback.format_exc()
-        print_line(tb, cls="error")
-</py-script>
+show_menu()
+  </py-script>
+</body>
+</html>
