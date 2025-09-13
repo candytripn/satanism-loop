@@ -63,14 +63,15 @@ def print_line(s="", cls=""):
     screen.innerHTML += line
     screen.scrollTop = screen.scrollHeight
 
+def esc(s):
+    return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+
 def print_pre(s="", cls=""):
-    if cls:
-        block = f'<pre class="{cls}">{s}</pre>'
-    else:
-        block = f"<pre>{s}</pre>"
+    block = f'<pre class="{cls}">{esc(s)}</pre>' if cls else f"<pre>{esc(s)}</pre>"
     box = f'<div class="errorbox">{block}</div>'
     screen.innerHTML += box
     screen.scrollTop = screen.scrollHeight
+
 
 async def pause(sec): 
     await asyncio.sleep(sec)
@@ -92,13 +93,14 @@ def show_input(prompt):
 def fake_traceback(msg="💀 Crashout! 💀"):
     ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     frames = [
-        '  File "<browser>", line 76, in satanism_loop',
-        '  File "<browser>", line 121, in on_submit',
-        '  File "<pyscript>", line 1, in <module>'
+        '  File "browser.py", line 76, in satanism_loop',
+        '  File "browser.py", line 121, in on_submit',
+        '  File "pyscript_runtime.py", line 1, in module'
     ]
     header = "Traceback (most recent call last):"
     lines = [header] + frames + [f"Exception: {msg}"]
     return "\n".join(lines) + f"\n[{ts}]"
+
 
 async def fake_crash():
     print_line("What? WHAT?!?", cls="error")
